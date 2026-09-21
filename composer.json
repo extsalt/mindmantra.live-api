@@ -1,0 +1,21 @@
+{
+    "name": "mindmantra/live-api",
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "ext-json": "*",
+        "ext-pdo": "*",
+        "flightphp/core": "^3.18"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "config": {
+        "process-timeout": 0,
+        "sort-packages": true
+    },
+    "scripts": {
+        "start": "@php -S localhost:8000 -t public"
+    }
+}
