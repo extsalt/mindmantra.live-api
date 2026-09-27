@@ -1,16 +1,36 @@
+# Environment & Secrets
+.env
+.env.backup
+.env.*.local
+
+# Composer
 /vendor/
-/composer.lock
-/.vscode/
-/.vagrant/
-/.runway-creds.json
-/app/config/config.php
-/.env
-/database.sqlite
-/app/cache/*
-!/app/cache/.gitkeep
-/app/log/*
-!/app/log/.gitkeep
-/.phpunit.result.cache
-/phpunit.xml
-/coverage/
-/clover.xml
+composer.phar
+
+# CodeIgniter Writable
+/writable/cache/*
+!/writable/cache/index.html
+!/writable/cache/.gitkeep
+/writable/debugbar/*
+!/writable/debugbar/index.html
+!/writable/debugbar/.gitkeep
+/writable/logs/*
+!/writable/logs/index.html
+!/writable/logs/.gitkeep
+/writable/session/*
+!/writable/session/index.html
+!/writable/session/.gitkeep
+/writable/uploads/*
+!/writable/uploads/index.html
+!/writable/uploads/.gitkeep
+
+# IDE & OS
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db

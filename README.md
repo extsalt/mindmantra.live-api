@@ -1,264 +1,61 @@
-# Flight PHP Skeleton
+# CodeIgniter 4 Framework
 
-Official starter for [Flight PHP](https://docs.flightphp.com) — a fast, simple, extensible micro-framework.
+## What is CodeIgniter?
 
-This repository is what you get from:
+CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
+More information can be found at the [official site](https://codeigniter.com).
 
-```bash
-composer create-project flightphp/skeleton cool-project-name
-```
+This repository holds the distributable version of the framework.
+It has been built from the
+[development repository](https://github.com/codeigniter4/CodeIgniter4).
 
-It is built so **you can write every line yourself**, following one clear application pattern, and so **AI coding tools succeed** when you choose to use them. Same codebase either way.
+More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
 
----
+You can read the [user guide](https://codeigniter.com/user_guide/)
+corresponding to the latest version of the framework.
 
-## Who this is for
+## Important Change with index.php
 
-| You… | Start here |
-|------|------------|
-| Want to code the app yourself | [Quick start](#quick-start) → [How you work day to day](#how-you-work-day-to-day) → [Flight docs ↔ this skeleton](#flight-docs--this-skeleton) |
-| Use any AI coding agent | Same as above, then [AI-assisted development](#ai-assisted-development), root **`AGENTS.md`**, and **`SECURITY.md`** |
-| Are comparing to older Flight demos | [Flight docs ↔ this skeleton](#flight-docs--this-skeleton) |
+`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
+for better security and separation of components.
 
-Flight’s **framework APIs** live in the docs and in `vendor/flightphp/core`. This skeleton’s job is a **default application layout** (folders, DI, config, views, models) so you are not inventing structure on day one.
+This means that you should configure your web server to "point" to your project's *public* folder, and
+not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
+framework are exposed.
 
----
+**Please** read the user guide for a better explanation of how CI4 works!
 
-## Requirements
+## Repository Management
 
-- PHP 8.1+ recommended (app code stays careful about syntax; some deps such as Runway 1.x need 8.2+)
-- Composer
-- `ext-json`, `ext-pdo` (`pdo_sqlite` for the default database)
+We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
+We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
+FEATURE REQUESTS.
 
----
+This repository is a "distribution" one, built by our release preparation script.
+Problems with it can be raised on our forum, or as issues in the main repository.
 
-## Create a project
+## Contributing
 
-```bash
-composer create-project flightphp/skeleton cool-project-name
-cd cool-project-name
-```
+We welcome contributions from the community.
 
-That step copies `config_sample.php` → `config.php`, `.env.example` → `.env` (when present), creates cache/log dirs, and writes `.runway-config.json` if needed.
+Please read the [*Contributing to CodeIgniter*](https://github.com/codeigniter4/CodeIgniter4/blob/develop/CONTRIBUTING.md) section in the development repository.
 
----
+## Server Requirements
 
-## Quick start
+PHP version 8.2 or higher is required, with the following extensions installed:
 
-```bash
-# Optional: edit .env or app/config/config.php
-composer start
-# → http://localhost:8000
+- [intl](http://php.net/manual/en/intl.requirements.php)
+- [mbstring](http://php.net/manual/en/mbstring.installation.php)
 
-# Sample data (posts table + ActiveRecord example)
-php runway migrate
-# → http://localhost:8000/posts
-# → http://localhost:8000/api/posts
-```
+> [!WARNING]
+> - The end of life date for PHP 7.4 was November 28, 2022.
+> - The end of life date for PHP 8.0 was November 26, 2023.
+> - The end of life date for PHP 8.1 was December 31, 2025.
+> - If you are still using below PHP 8.2, you should upgrade immediately.
+> - The end of life date for PHP 8.2 will be December 31, 2026.
 
-### Docker
+Additionally, make sure that the following extensions are enabled in your PHP:
 
-```bash
-docker compose up -d
-# → http://localhost:8080
-```
-
-### Vagrant
-
-```bash
-vagrant up
-# → http://localhost:8000
-```
-
----
-
-## Project structure
-
-```
-project-root/
-├── README.md             # You are here (humans first)
-├── AGENTS.md             # Root AI instructions (source of truth)
-├── SECURITY.md           # Security policy (secrets, headers, reporting)
-├── .env.example          # Documented env overlays (secrets / deploy)
-├── public/index.php      # Web entry only
-├── app/
-│   ├── config/           # bootstrap, routes, services + AGENTS.md
-│   ├── Utils/            # Config, Env, DatabaseFactory + AGENTS.md
-│   ├── Controller/       # App\Controller\* + AGENTS.md
-│   ├── Middleware/       # App\Middleware\* + AGENTS.md
-│   ├── Model/            # App\Model\* + AGENTS.md
-│   ├── commands/         # Runway CLI + AGENTS.md
-│   ├── views/            # Twig + AGENTS.md
-│   ├── cache/
-│   └── log/
-├── migrations/           # SQL + AGENTS.md
-└── tests/                # PHPUnit + AGENTS.md
-```
-
-Namespaces are **`App\…`** (PascalCase folders: `Controller`, not `controllers`). Framework code stays **`flight\…`**.
-
----
-
-## How you work day to day
-
-You do not need an AI tool. The loop is:
-
-1. **Route** — add a line in `app/config/routes.php`
-2. **Controller** — class under `app/Controller/` with constructor injection
-3. **View or JSON** — Twig under `app/views/`, or `$this->app->json(...)`
-4. **Database (optional)** — migration in `migrations/`, model under `app/Model/`, inject `SimplePdo`
-
-### Minimal controller
-
-```php
-namespace App\Controller;
-
-use flight\Engine;
-
-class HelloController
-{
-    private $app;
-
-    public function __construct(Engine $app)
-    {
-        $this->app = $app;
-    }
-
-    public function index(): void
-    {
-        $this->app->render('welcome', [
-            'message' => 'Hello from a controller',
-        ]);
-    }
-}
-```
-
-```php
-// app/config/routes.php
-$router->get('/hello', [HelloController::class, 'index']);
-```
-
-Dice builds the controller and injects the **same** `Engine` instance used at boot (see `app/config/services.php`). That matches Flight’s dependency-injection and unit-testing guidance: prefer `$app` / injected services over the static `Flight::` facade in application classes.
-
-### Configuration
-
-Three layers:
-
-1. **`.env`** — secrets and deploy overrides (`DB_PASSWORD`, `APP_ENV`, Docker)
-2. **`app/config/config.php`** — structured **literal** defaults (safe for `runway config:set`)
-3. **Bootstrap merge** — mapped env keys win when set (`App\Utils\Config::mergeEnv`)
-
-| Task | Where |
-|------|--------|
-| Local defaults / non-secret flags | `config.php` or `php runway config:set …` |
-| Secrets / production | `.env` (gitignored) |
-| Read file config | `php runway config:get` |
-
-Do **not** put `$_ENV[...]` expressions inside `config.php`. Runway rewrites that file as static PHP and would bake resolved values (including secrets) into the file.
-
-Full env→config map: **`AGENTS.md`**.
-
-### Useful commands
-
-| Command | Purpose |
-|---------|---------|
-| `composer start` | PHP built-in server on port 8000 |
-| `composer test` | PHPUnit |
-| `composer analyse` | PHPStan level 8 |
-| `composer check` | PHPUnit + PHPStan |
-| `php runway migrate` | Apply migrations for active driver (`.sql` / `.mysql.sql`) |
-| `php runway --help` | List CLI commands |
-| `php runway config:get` / `config:set` | File config helpers |
-
-Only rely on commands that actually appear in `php runway --help` for your install.
-
----
-
-## Stack (this skeleton’s defaults)
-
-| Concern | Choice | Why this default |
-|---------|--------|------------------|
-| Framework | [flightphp/core](https://docs.flightphp.com) (`Engine`, `SimplePdo`) | Long-term Flight APIs |
-| DI | [Dice](https://docs.flightphp.com/en/v3/learn/dependency-injection-container) + Engine substitutions | Testable controllers; official DI pattern |
-| Views | [Twig](https://twig.symfony.com/) | Wide ecosystem; `$app->render()` is mapped to Twig |
-| Models | [ActiveRecord](https://docs.flightphp.com/awesome-plugins/active-record) | One model story |
-| DB connection | [`SimplePdo`](https://docs.flightphp.com/en/v3/learn/simple-pdo) | Preferred over deprecated PdoWrapper |
-| Sessions | [flightphp/session](https://docs.flightphp.com/awesome-plugins/session) | Injectable; avoid raw `$_SESSION` |
-| CLI | [Runway](https://docs.flightphp.com/awesome-plugins/runway) | Migrations + scaffolding host |
-| Debugger | Tracy (+ tracy-extensions in dev) | Error UX in development |
-
-These are **deliberate product defaults for the official starter**, not the only way to use Flight. A micro app can still be a single file and `Flight::route()` — that path is documented in core docs / zip installs, not duplicated here.
-
----
-
-## Flight docs ↔ this skeleton
-
-Docs teach the **framework**. The skeleton fixes an **application shape** so copy-paste from tutorials does not fight the tree. When they differ, **prefer this repository’s layout for code you add under `app/`**, and use docs for method names, options, and plugins.
-
-| Topic | Docs often show | This skeleton expects |
-|-------|-----------------|------------------------|
-| Entry / demo style | `Flight::route(...)`, sometimes one-file | `public/index.php` → bootstrap → `routes.php` + controllers |
-| App handle | `Flight::…` static facade | Inject `flight\Engine $app` in controllers/middleware; bootstrap may still call `Flight::app()` |
-| Controllers | Various namespaces / ad hoc classes | `App\Controller\…` → `app/Controller/` |
-| Routing file | Inline in index or mixed | All HTTP routes in `app/config/routes.php` |
-| Views | Built-in PHP views, Latte examples, etc. | **Twig only** under `app/views/`; `$app->render('name', $data)` |
-| Database helper | Older **PdoWrapper** examples still around | **`SimplePdo`** (PdoWrapper is deprecated as of core 3.18) |
-| Models | Raw SQL, or ActiveRecord in plugin docs | ActiveRecord under `App\Model\`; connection is SimplePdo |
-| Config | Arrays, env snippets, register() | Literal `config.php` + `.env` overlay; inject `App\Utils\Config` |
-| DI | Optional / several containers | Dice wired in `services.php` with **Engine substitutions** |
-| Testing | Construct controller with `new Engine()` + mocks | Same idea; see `tests/Unit/` and the [unit testing guide](https://docs.flightphp.com/en/v3/guides/unit-testing) |
-
-**Reading docs without fighting the skeleton**
-
-1. Learn the API from docs (`request()`, `json()`, `route` patterns, middleware `before`, ActiveRecord methods, SimplePdo helpers).
-2. Place new code in this tree (`Controller`, `Middleware`, `Model`, `views`, `routes.php`, `services.php`).
-3. Prefer constructor injection over new static `Flight::` calls inside app classes.
-4. If a doc example uses `Flight::db()` or `Flight::render()`, the equivalent here is usually injected `SimplePdo` / `$this->app->render()` (render is already mapped to Twig).
-
-**Where docs and skeleton already agree**
-
-Flight’s own [unit testing guide](https://docs.flightphp.com/en/v3/guides/unit-testing) steers away from `Flight::` globals toward `Engine` injection and DI — the same stance this skeleton takes for `app/` code. Short facade examples in learn pages remain valid for quick experiments; they are not the house style for this starter.
-
-**Docs site updates**
-
-Install / structure pages on docs.flightphp.com should stay in sync with this README (especially `App\` namespaces and Twig/SimplePdo defaults) whenever the skeleton ships a breaking layout change. Until then, **this README is the source of truth for create-project layout**.
-
----
-
-## AI-assisted development (optional)
-
-Nothing in the runtime requires an AI tool. There is **no create-project question** about which assistant you use.
-
-This repo standardizes on the open **`AGENTS.md`** convention only (no separate Copilot / Cursor / Gemini / Windsurf rule files):
-
-| File | Role |
-|------|------|
-| **[AGENTS.md](AGENTS.md)** | Root rules + **routing table** to scoped files |
-| **`app/**/AGENTS.md`**, **`migrations/AGENTS.md`**, **`tests/AGENTS.md`** | Light, area-specific tips (controllers, Twig, Runway, …) loaded when working in that tree |
-| **[SECURITY.md](SECURITY.md)** | Secrets, headers, XSS/SQL, reporting — keep security deliberate and separate |
-
-If you use an AI assistant:
-
-1. Point it at root **`AGENTS.md`** (and let it follow links to scoped files when editing those folders).
-2. Prefer [docs.flightphp.com](https://docs.flightphp.com) and MCP `https://mcp.flightphp.com/mcp`.
-3. Verify APIs under `vendor/flightphp/core` — do not invent Flight methods.
-4. **Project AGENTS / SECURITY win** over generic training data.
-5. After application-code changes: add/update unit tests and run **`composer check`** (PHPUnit + PHPStan level 8).
-
-Hand-written and AI-generated code should look the same: one controller style, one config path, one view layer.
-
----
-
-## First customization checklist
-
-1. Add a route in `app/config/routes.php`
-2. Add `app/Controller/YourController.php` (constructor injection)
-3. Add a Twig template under `app/views/` **or** return JSON from the controller
-4. For DB: SQL file in `migrations/` (`.sql` for SQLite, `.mysql.sql` for MySQL), `php runway migrate`, model in `app/Model/`, inject `SimplePdo`
-5. After code changes: add/update tests, then run `composer check` (PHPUnit + PHPStan level 8)
-
----
-
-## License
-
-MIT — see [LICENSE](LICENSE).
+- json (enabled by default - don't turn it off)
+- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
+- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
