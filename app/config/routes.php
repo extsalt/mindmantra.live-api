@@ -15,9 +15,16 @@ $routes->group('api/v1', static function ($routes) {
     $routes->get('health', 'Home::index');
     $routes->get('ping', 'Home::ping');
 
-    // Future resource routes can be declared here, e.g.:
-    // $routes->resource('users', ['controller' => 'UserController']);
+    // Auth Endpoints
+    $routes->group('auth', static function ($routes) {
+        $routes->post('login', 'Api\V1\AuthController::login');
+    });
 });
+
+// Convenient / backward-compatible aliases
+$routes->post('api/auth/login', 'Api\V1\AuthController::login');
+$routes->post('auth/login', 'Api\V1\AuthController::login');
+$routes->post('login', 'Api\V1\AuthController::login');
 
 // JSON 404 Override for unknown endpoints
 $routes->set404Override(static function () {
