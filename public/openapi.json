@@ -1,0 +1,421 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "MindMantra Live API",
+    "description": "RESTful API for MindMantra learning platform providing authentication, course catalogs, and multiple choice question (MCQ) assessments.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "MindMantra Team",
+      "url": "https://mindmantra.live"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local Development Server"
+    },
+    {
+      "url": "https://api.mindmantra.live",
+      "description": "Production Server"
+    }
+  ],
+  "paths": {
+    "/api/v1/auth/signup": {
+      "post": {
+        "summary": "Register a new user",
+        "description": "Create a new user account with email and password. Returns session token and user profile.",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignupRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "409": {
+            "description": "Email already exists"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "summary": "Authenticate user",
+        "description": "Authenticate an existing user with email and password. Sets an HTTP-only session cookie and returns a bearer token.",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "403": {
+            "description": "Account disabled"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "summary": "Log out user",
+        "description": "Terminate the current session and clear authentication cookies.",
+        "tags": ["Authentication"],
+        "responses": {
+          "200": {
+            "description": "Logged out successfully"
+          }
+        }
+      }
+    },
+    "/api/v1/courses": {
+      "get": {
+        "summary": "List published courses",
+        "description": "Retrieve a paginated list of published courses with optional filtering by category or keyword search.",
+        "tags": ["Courses"],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number (1-indexed)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of courses per page (max 100)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "Filter by course category",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search term matching title or description",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated course list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/courses/{identifier}": {
+      "get": {
+        "summary": "Get course details",
+        "description": "Retrieve comprehensive details of a single course by its numeric ID or unique slug.",
+        "tags": ["Courses"],
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "description": "Course numeric ID or URL slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Course details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseDetailResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Course not found"
+          }
+        }
+      }
+    },
+    "/api/v1/courses/{identifier}/mcqs": {
+      "get": {
+        "summary": "List MCQs for a course",
+        "description": "Retrieve paginated Multiple Choice Questions (MCQs) associated with a given course.",
+        "tags": ["Courses", "MCQs"],
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "description": "Course numeric ID or URL slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number (1-indexed)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of questions per page (max 100)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated MCQs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseMcqResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Course not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "mm_user_session"
+      }
+    },
+    "schemas": {
+      "SignupRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "student@example.com"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "minLength": 8,
+            "example": "StrongPass123!"
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "student@example.com"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "StrongPass123!"
+          }
+        }
+      },
+      "UserProfile": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "1" },
+          "email": { "type": "string", "example": "student@example.com" },
+          "name": { "type": "string", "example": "Student" },
+          "picture": { "type": "string", "example": "" },
+          "googleId": { "type": "string", "example": "" },
+          "role": { "type": "string", "example": "user" }
+        }
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "integer", "example": 200 },
+          "success": { "type": "boolean", "example": true },
+          "message": { "type": "string", "example": "Login successful" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "user": { "$ref": "#/components/schemas/UserProfile" },
+              "token": { "type": "string", "example": "eyJpZCI6IjEi...sig" }
+            }
+          }
+        }
+      },
+      "Course": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1000004 },
+          "slug": { "type": "string", "example": "upsssc-pet-2026" },
+          "title": { "type": "string", "example": "UPSSSC PET 2026" },
+          "description": { "type": "string", "example": "Comprehensive preparation course for UPSSSC PET exam." },
+          "thumbnail": { "type": "string", "example": "https://example.com/thumb.jpg" },
+          "time_limit": { "type": "integer", "example": 120 },
+          "total_marks": { "type": "integer", "example": 100 },
+          "total_questions": { "type": "integer", "example": 100 },
+          "negative_marking": { "type": "number", "example": 0.25 },
+          "is_published": { "type": "integer", "example": 1 },
+          "category": { "type": "string", "example": "Government Exams" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "MCQ": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 32 },
+          "question_text": { "type": "string", "example": "Who was the founder of the Maurya dynasty?" },
+          "options": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["Vijayalaya", "Chandragupta Maurya", "Sri Gupta", "Simuka"]
+          },
+          "correct_answer": { "type": "integer", "description": "Index of the correct option (0-based)", "example": 1 },
+          "image_url": { "type": "string", "nullable": true, "example": null },
+          "subject": { "type": "string", "example": "History" },
+          "year": { "type": "integer", "nullable": true, "example": 2024 }
+        }
+      },
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "page": { "type": "integer", "example": 1 },
+          "per_page": { "type": "integer", "example": 10 },
+          "total": { "type": "integer", "example": 25 },
+          "total_pages": { "type": "integer", "example": 3 }
+        }
+      },
+      "CourseListResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "integer", "example": 200 },
+          "success": { "type": "boolean", "example": true },
+          "message": { "type": "string", "example": "Courses retrieved successfully." },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Course" }
+          },
+          "pagination": { "$ref": "#/components/schemas/Pagination" }
+        }
+      },
+      "CourseDetailResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "integer", "example": 200 },
+          "success": { "type": "boolean", "example": true },
+          "message": { "type": "string", "example": "Course retrieved successfully." },
+          "data": { "$ref": "#/components/schemas/Course" }
+        }
+      },
+      "CourseMcqResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "integer", "example": 200 },
+          "success": { "type": "boolean", "example": true },
+          "message": { "type": "string", "example": "Course MCQs retrieved successfully." },
+          "course": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer", "example": 1000004 },
+              "slug": { "type": "string", "example": "upsssc-pet-2026" },
+              "title": { "type": "string", "example": "UPSSSC PET 2026" }
+            }
+          },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/MCQ" }
+          },
+          "pagination": { "$ref": "#/components/schemas/Pagination" }
+        }
+      }
+    }
+  }
+}
