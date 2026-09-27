@@ -21,6 +21,14 @@ $routes->group('api/v1', static function ($routes) {
         $routes->post('signup', 'Api\V1\AuthController::signup');
         $routes->post('logout', 'Api\V1\AuthController::logout');
     });
+
+    // Course Endpoints
+    $routes->get('courses', 'Api\V1\CourseController::index');
+    $routes->get('courses/(:segment)/mcqs', 'Api\V1\CourseController::mcqs/$1');
+    $routes->get('courses/(:segment)', 'Api\V1\CourseController::show/$1');
+
+    // OpenAPI Specification Endpoint
+    $routes->get('openapi.json', 'Api\V1\OpenApiController::index');
 });
 
 // Convenient / backward-compatible aliases
@@ -33,6 +41,10 @@ $routes->post('signup', 'Api\V1\AuthController::signup');
 $routes->post('api/auth/logout', 'Api\V1\AuthController::logout');
 $routes->post('auth/logout', 'Api\V1\AuthController::logout');
 $routes->post('logout', 'Api\V1\AuthController::logout');
+$routes->get('courses', 'Api\V1\CourseController::index');
+$routes->get('courses/(:segment)/mcqs', 'Api\V1\CourseController::mcqs/$1');
+$routes->get('courses/(:segment)', 'Api\V1\CourseController::show/$1');
+$routes->get('openapi.json', 'Api\V1\OpenApiController::index');
 
 // JSON 404 Override for unknown endpoints
 $routes->set404Override(static function () {
