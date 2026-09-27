@@ -242,4 +242,29 @@ class AuthController extends BaseController
             ],
         ], 201)->setCookie($cookie);
     }
+
+    /**
+     * Terminate the user session and clear authentication cookie.
+     */
+    public function logout(): ResponseInterface
+    {
+        $isSecure = (ENVIRONMENT === 'production');
+        $cookie   = new Cookie(
+            'mm_user_session',
+            '',
+            [
+                'expires'  => time() - 3600,
+                'path'     => '/',
+                'secure'   => $isSecure,
+                'httponly' => true,
+                'samesite' => Cookie::SAMESITE_LAX,
+            ]
+        );
+
+        return $this->respond([
+            'status'  => 200,
+            'success' => true,
+            'message' => 'Logged out successfully.',
+        ], 200)->setCookie($cookie);
+    }
 }

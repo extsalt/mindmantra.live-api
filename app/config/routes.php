@@ -19,6 +19,7 @@ $routes->group('api/v1', static function ($routes) {
     $routes->group('auth', static function ($routes) {
         $routes->post('login', 'Api\V1\AuthController::login');
         $routes->post('signup', 'Api\V1\AuthController::signup');
+        $routes->post('logout', 'Api\V1\AuthController::logout');
     });
 });
 
@@ -29,6 +30,9 @@ $routes->post('login', 'Api\V1\AuthController::login');
 $routes->post('api/auth/signup', 'Api\V1\AuthController::signup');
 $routes->post('auth/signup', 'Api\V1\AuthController::signup');
 $routes->post('signup', 'Api\V1\AuthController::signup');
+$routes->post('api/auth/logout', 'Api\V1\AuthController::logout');
+$routes->post('auth/logout', 'Api\V1\AuthController::logout');
+$routes->post('logout', 'Api\V1\AuthController::logout');
 
 // JSON 404 Override for unknown endpoints
 $routes->set404Override(static function () {
