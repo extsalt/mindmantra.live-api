@@ -318,16 +318,8 @@
       "AuthResponse": {
         "type": "object",
         "properties": {
-          "status": { "type": "integer", "example": 200 },
-          "success": { "type": "boolean", "example": true },
-          "message": { "type": "string", "example": "Login successful" },
-          "data": {
-            "type": "object",
-            "properties": {
-              "user": { "$ref": "#/components/schemas/UserProfile" },
-              "token": { "type": "string", "example": "eyJpZCI6IjEi...sig" }
-            }
-          }
+          "user": { "$ref": "#/components/schemas/UserProfile" },
+          "token": { "type": "string", "example": "eyJpZCI6IjEi...sig" }
         }
       },
       "Course": {
@@ -376,9 +368,6 @@
       "CourseListResponse": {
         "type": "object",
         "properties": {
-          "status": { "type": "integer", "example": 200 },
-          "success": { "type": "boolean", "example": true },
-          "message": { "type": "string", "example": "Courses retrieved successfully." },
           "data": {
             "type": "array",
             "items": { "$ref": "#/components/schemas/Course" }
@@ -389,18 +378,12 @@
       "CourseDetailResponse": {
         "type": "object",
         "properties": {
-          "status": { "type": "integer", "example": 200 },
-          "success": { "type": "boolean", "example": true },
-          "message": { "type": "string", "example": "Course retrieved successfully." },
           "data": { "$ref": "#/components/schemas/Course" }
         }
       },
       "CourseMcqResponse": {
         "type": "object",
         "properties": {
-          "status": { "type": "integer", "example": 200 },
-          "success": { "type": "boolean", "example": true },
-          "message": { "type": "string", "example": "Course MCQs retrieved successfully." },
           "course": {
             "type": "object",
             "properties": {

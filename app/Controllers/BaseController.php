@@ -79,14 +79,9 @@ abstract class BaseController extends Controller
     /**
      * Standardized success response helper.
      */
-    protected function sendResponse(mixed $data = null, string $message = 'Success', int $status = 200, array $headers = []): ResponseInterface
+    protected function sendResponse(mixed $data = null, int $status = 200, array $headers = []): ResponseInterface
     {
-        $response = [
-            'status'  => $status,
-            'success' => true,
-            'message' => $message,
-            'data'    => $data,
-        ];
+        $response = is_array($data) ? $data : ['data' => $data];
 
         $res = $this->respond($response, $status);
         foreach ($headers as $header => $value) {
@@ -101,11 +96,7 @@ abstract class BaseController extends Controller
      */
     protected function sendError(string|array $error, int $status = 400, mixed $data = null): ResponseInterface
     {
-        $response = [
-            'status'   => $status,
-            'success'  => false,
-            'messages' => is_array($error) ? $error : ['error' => $error],
-        ];
+        $response = is_array($error) ? $error : ['error' => $error];
 
         if ($data !== null) {
             $response['data'] = $data;

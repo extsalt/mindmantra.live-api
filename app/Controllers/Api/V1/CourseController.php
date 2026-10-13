@@ -37,9 +37,6 @@ class CourseController extends BaseController
         );
 
         return $this->respond([
-            'status'     => 200,
-            'success'    => true,
-            'message'    => 'Courses retrieved successfully.',
             'data'       => $result['data'],
             'pagination' => [
                 'page'        => $result['page'],
@@ -60,17 +57,12 @@ class CourseController extends BaseController
 
         if ($course === null) {
             return $this->respond([
-                'status'   => 404,
-                'success'  => false,
-                'message'  => 'Course not found.',
+                'error' => 'Course not found.',
             ], 404);
         }
 
         return $this->respond([
-            'status'  => 200,
-            'success' => true,
-            'message' => 'Course retrieved successfully.',
-            'data'    => $course,
+            'data' => $course,
         ], 200);
     }
 
@@ -88,9 +80,7 @@ class CourseController extends BaseController
 
         if ($course === null) {
             return $this->respond([
-                'status'   => 404,
-                'success'  => false,
-                'message'  => 'Course not found.',
+                'error' => 'Course not found.',
             ], 404);
         }
 
@@ -101,9 +91,6 @@ class CourseController extends BaseController
         $result        = $questionModel->getPaginatedMcqsByCourseId((int) $course['id'], $page, $perPage);
 
         return $this->respond([
-            'status'     => 200,
-            'success'    => true,
-            'message'    => 'Course MCQs retrieved successfully.',
             'course'     => [
                 'id'    => (int) $course['id'],
                 'slug'  => $course['slug'],

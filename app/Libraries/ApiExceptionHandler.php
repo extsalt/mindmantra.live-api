@@ -64,13 +64,7 @@ class ApiExceptionHandler extends BaseExceptionHandler implements ExceptionHandl
         $errorMessage = $exception->getMessage() ?: ($response->getReasonPhrase() ?: 'An error occurred');
 
         $payload = [
-            'status'   => $statusCode,
-            'success'  => false,
-            'error'    => $statusCode,
-            'message'  => $errorMessage,
-            'messages' => [
-                'error' => $errorMessage,
-            ],
+            'error' => $errorMessage,
         ];
 
         if ($isDev) {

@@ -12,13 +12,11 @@ class Home extends BaseController
     public function index(): ResponseInterface
     {
         return $this->respond([
-            'status'      => 200,
-            'success'     => true,
             'name'        => 'MindMantra Live API',
             'version'     => '1.0.0',
             'environment' => ENVIRONMENT,
             'timestamp'   => date('c'),
-        ]);
+        ], 200);
     }
 
     /**
@@ -27,11 +25,9 @@ class Home extends BaseController
     public function ping(): ResponseInterface
     {
         return $this->respond([
-            'status'    => 200,
-            'success'   => true,
             'message'   => 'pong',
             'timestamp' => microtime(true),
-        ]);
+        ], 200);
     }
 
     /**
@@ -40,10 +36,7 @@ class Home extends BaseController
     public function notFound(): ResponseInterface
     {
         return $this->respond([
-            'status'  => 404,
-            'success' => false,
-            'error'   => 404,
-            'message' => 'Endpoint not found',
+            'error' => 'Endpoint not found',
         ], 404);
     }
 }

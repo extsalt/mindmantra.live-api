@@ -45,10 +45,8 @@ class AuthController extends BaseController
 
         if (! $this->validateData($input, $rules, $messages)) {
             return $this->respond([
-                'status'   => 400,
-                'success'  => false,
-                'message'  => 'Validation failed',
-                'errors'   => $this->validator->getErrors(),
+                'error'  => 'Validation failed',
+                'errors' => $this->validator->getErrors(),
             ], 400);
         }
 
@@ -61,27 +59,21 @@ class AuthController extends BaseController
 
         if ($user === null || empty($user['password_hash'])) {
             return $this->respond([
-                'status'   => 401,
-                'success'  => false,
-                'message'  => 'Invalid email or password.',
+                'error' => 'Invalid email or password.',
             ], 401);
         }
 
         // 3. Verify password
         if (! AuthLibrary::verifyPassword($password, $user['password_hash'])) {
             return $this->respond([
-                'status'   => 401,
-                'success'  => false,
-                'message'  => 'Invalid email or password.',
+                'error' => 'Invalid email or password.',
             ], 401);
         }
 
         // 4. Verify account status (active = 1)
         if (isset($user['status']) && (int) $user['status'] !== 1) {
             return $this->respond([
-                'status'   => 403,
-                'success'  => false,
-                'message'  => 'Account is inactive or disabled. Please contact support.',
+                'error' => 'Account is inactive or disabled. Please contact support.',
             ], 403);
         }
 
@@ -118,13 +110,8 @@ class AuthController extends BaseController
         );
 
         return $this->respond([
-            'status'   => 200,
-            'success'  => true,
-            'message'  => 'Login successful',
-            'data'     => [
-                'user'  => $userProfile,
-                'token' => $sessionToken,
-            ],
+            'user'  => $userProfile,
+            'token' => $sessionToken,
         ], 200)->setCookie($cookie);
     }
 
@@ -161,10 +148,8 @@ class AuthController extends BaseController
 
         if (! $this->validateData($input, $rules, $messages)) {
             return $this->respond([
-                'status'   => 400,
-                'success'  => false,
-                'message'  => 'Validation failed',
-                'errors'   => $this->validator->getErrors(),
+                'error'  => 'Validation failed',
+                'errors' => $this->validator->getErrors(),
             ], 400);
         }
 
@@ -175,9 +160,7 @@ class AuthController extends BaseController
         $userModel = new UserModel();
         if ($userModel->findByEmail($email) !== null) {
             return $this->respond([
-                'status'   => 409,
-                'success'  => false,
-                'message'  => 'An account with this email address already exists.',
+                'error' => 'An account with this email address already exists.',
             ], 409);
         }
 
@@ -199,9 +182,7 @@ class AuthController extends BaseController
 
         if (! $userId) {
             return $this->respond([
-                'status'   => 500,
-                'success'  => false,
-                'message'  => 'Failed to create user account.',
+                'error' => 'Failed to create user account.',
             ], 500);
         }
 
@@ -233,13 +214,8 @@ class AuthController extends BaseController
         );
 
         return $this->respond([
-            'status'   => 201,
-            'success'  => true,
-            'message'  => 'User registered successfully.',
-            'data'     => [
-                'user'  => $userProfile,
-                'token' => $sessionToken,
-            ],
+            'user'  => $userProfile,
+            'token' => $sessionToken,
         ], 201)->setCookie($cookie);
     }
 
@@ -262,8 +238,6 @@ class AuthController extends BaseController
         );
 
         return $this->respond([
-            'status'  => 200,
-            'success' => true,
             'message' => 'Logged out successfully.',
         ], 200)->setCookie($cookie);
     }
