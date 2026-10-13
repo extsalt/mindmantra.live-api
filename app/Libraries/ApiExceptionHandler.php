@@ -61,26 +61,27 @@ class ApiExceptionHandler extends BaseExceptionHandler implements ExceptionHandl
 
         $isDev = (ENVIRONMENT === 'development');
 
+        $errorMessage = $exception->getMessage() ?: ($response->getReasonPhrase() ?: 'An error occurred');
+
         $payload = [
             'status'   => $statusCode,
             'success'  => false,
             'error'    => $statusCode,
+            'message'  => $errorMessage,
             'messages' => [
-                'error' => $exception->getMessage() ?: ($response->getReasonPhrase() ?: 'An error occurred'),
+                'error' => $errorMessage,
             ],
         ];
 
         if ($isDev) {
-            $payload['debug'] = [
-                'exception' => get_class($exception),
-                'file'      => $exception->getFile(),
-                'line'      => $exception->getLine(),
-                'trace'     => explode("\n", $exception->getTraceAsString()),
+            $payload['exception'] = [
+                'type' => get_class($exception),
+                'file' => $exception->getFile() . ':' . $exception->getLine(),
             ];
         }
 
         $response->setContentType('application/json')
-            ->setBody((string) json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE))
+            ->setBody((string) json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE))
             ->send();
 
         if (ENVIRONMENT !== 'testing') {

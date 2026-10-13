@@ -2,6 +2,7 @@
 .env
 .env.backup
 .env.*.local
+*.sql
 
 # Composer
 /vendor/

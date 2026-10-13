@@ -33,4 +33,17 @@ class Home extends BaseController
             'timestamp' => microtime(true),
         ]);
     }
+
+    /**
+     * Standard JSON 404 response for unknown endpoints.
+     */
+    public function notFound(): ResponseInterface
+    {
+        return $this->respond([
+            'status'  => 404,
+            'success' => false,
+            'error'   => 404,
+            'message' => 'Endpoint not found',
+        ], 404);
+    }
 }
