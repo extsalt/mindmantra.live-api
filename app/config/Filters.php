@@ -42,12 +42,8 @@ class Filters extends BaseFilters
      * @var array{before: list<string>, after: list<string>}
      */
     public array $required = [
-        'before' => [
-            'forcehttps', // Force Global Secure Requests
-        ],
-        'after' => [
-            'performance', // Performance Metrics
-        ],
+        'before' => [],
+        'after'  => [],
     ];
 
     /**

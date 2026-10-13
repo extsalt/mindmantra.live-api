@@ -103,7 +103,7 @@ class Routing extends BaseRouting
      *
      * If FALSE, will ignore any attributes.
      */
-    public bool $useControllerAttributes = true;
+    public bool $useControllerAttributes = false;
 
     /**
      * For Defined Routes.

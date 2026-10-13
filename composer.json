@@ -26,5 +26,12 @@
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true
+    },
+    "scripts": {
+        "dev": "php spark serve --port 8080",
+        "serve": "php spark serve --port 8080",
+        "routes": "php spark routes",
+        "optimize": "php spark optimize",
+        "cache:clear": "php spark cache:clear"
     }
 }

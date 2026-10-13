@@ -23,19 +23,16 @@ class Modules extends BaseModules
      *
      * @var bool
      */
-    public $enabled = true;
+    public $enabled = false;
 
     /**
      * --------------------------------------------------------------------------
      * Enable Auto-Discovery Within Composer Packages?
      * --------------------------------------------------------------------------
      *
-     * If true, then auto-discovery will happen across all namespaces loaded
-     * by Composer, as well as the namespaces configured locally.
-     *
      * @var bool
      */
-    public $discoverInComposer = true;
+    public $discoverInComposer = false;
 
     /**
      * The Composer package list for Auto-Discovery

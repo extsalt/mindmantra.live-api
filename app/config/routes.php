@@ -47,13 +47,4 @@ $routes->get('courses/(:segment)', 'Api\V1\CourseController::show/$1');
 $routes->get('openapi.json', 'Api\V1\OpenApiController::index');
 
 // JSON 404 Override for unknown endpoints
-$routes->set404Override(static function () {
-    return response()->setStatusCode(404)->setJSON([
-        'status'   => 404,
-        'success'  => false,
-        'error'    => 404,
-        'messages' => [
-            'error' => 'Endpoint not found',
-        ],
-    ]);
-});
+$routes->set404Override('App\Controllers\Home::notFound');

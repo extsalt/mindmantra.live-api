@@ -26,8 +26,11 @@ class OpenApiController extends BaseController
         }
 
         $specContent = file_get_contents($specPath);
-        $decoded     = json_decode((string) $specContent, true);
 
-        return $this->respond($decoded ?: [], 200);
+        return $this->response
+            ->setStatusCode(200)
+            ->setContentType('application/json')
+            ->setHeader('Cache-Control', 'public, max-age=3600')
+            ->setBody((string) $specContent);
     }
 }
