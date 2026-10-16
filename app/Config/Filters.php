@@ -26,7 +26,10 @@ class Filters extends BaseFilters
         'performance'   => PerformanceMetrics::class,
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
+        'auth'          => \App\Filters\AuthFilter::class,
+        'optional-auth' => \App\Filters\OptionalAuthFilter::class,
     ];
+
 
     /**
      * List of special required filters.

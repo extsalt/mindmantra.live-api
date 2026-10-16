@@ -255,6 +255,213 @@
           }
         }
       }
+    },
+    "/api/v1/notifications": {
+      "get": {
+        "summary": "List user notifications",
+        "description": "Retrieve paginated list of notifications for the authenticated user, including unread count.",
+        "tags": ["Notifications"],
+        "security": [{ "bearerAuth": [] }, { "cookieAuth": [] }],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 15 } },
+          { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["unread", "read", "all"], "default": "all" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of notifications",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/NotificationListResponse" }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/api/v1/notifications/unread-count": {
+      "get": {
+        "summary": "Get unread notifications badge count",
+        "description": "Fast endpoint returning the number of unread notifications for the user.",
+        "tags": ["Notifications"],
+        "security": [{ "bearerAuth": [] }, { "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Unread count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 200 },
+                    "success": { "type": "boolean", "example": true },
+                    "unread_count": { "type": "integer", "example": 3 }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/api/v1/notifications/{id}": {
+      "get": {
+        "summary": "Get single notification details",
+        "tags": ["Notifications"],
+        "security": [{ "bearerAuth": [] }, { "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Notification details" },
+          "404": { "description": "Notification not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete a notification",
+        "tags": ["Notifications"],
+        "security": [{ "bearerAuth": [] }, { "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Notification deleted successfully" },
+          "404": { "description": "Notification not found" }
+        }
+      }
+    },
+    "/api/v1/notifications/{id}/read": {
+      "post": {
+        "summary": "Mark notification as read",
+        "tags": ["Notifications"],
+        "security": [{ "bearerAuth": [] }, { "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Marked as read successfully" }
+        }
+      }
+    },
+    "/api/v1/notifications/read-all": {
+      "post": {
+        "summary": "Mark all notifications as read",
+        "tags": ["Notifications"],
+        "security": [{ "bearerAuth": [] }, { "cookieAuth": [] }],
+        "responses": {
+          "200": { "description": "All notifications marked as read" }
+        }
+      }
+    },
+    "/api/v1/notifications/devices/register": {
+      "post": {
+        "summary": "Register or update FCM device token",
+        "description": "Registers device push token for mobile/web push notifications. Automatically binds to logged-in user if token is supplied.",
+        "tags": ["Notifications"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DeviceRegisterRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Device registered successfully" },
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+    "/api/v1/notifications/devices/unregister": {
+      "post": {
+        "summary": "Unregister FCM device token",
+        "tags": ["Notifications"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["token"],
+                "properties": {
+                  "token": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Device token unregistered successfully" }
+        }
+      }
+    },
+    "/api/v1/notifications/send": {
+      "post": {
+        "summary": "Send notification to a specific user",
+        "description": "Stores an in-app notification and dispatches a push notification to all active devices of the target user.",
+        "tags": ["Notifications"],
+        "security": [{ "bearerAuth": [] }, { "cookieAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SendNotificationRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Notification dispatched" },
+          "403": { "description": "Admin privileges required" }
+        }
+      }
+    },
+    "/api/v1/notifications/broadcast": {
+      "post": {
+        "summary": "Broadcast notification to all users",
+        "description": "Admin endpoint to send push notification to all active devices and store global announcement.",
+        "tags": ["Notifications"],
+        "security": [{ "bearerAuth": [] }, { "cookieAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BroadcastNotificationRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Broadcast dispatched successfully" },
+          "403": { "description": "Admin privileges required" }
+        }
+      }
+    },
+    "/api/v1/notifications/test-push": {
+      "post": {
+        "summary": "Test push dispatch to a specific FCM token",
+        "tags": ["Notifications"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["token"],
+                "properties": {
+                  "token": { "type": "string" },
+                  "title": { "type": "string" },
+                  "body": { "type": "string" },
+                  "data": { "type": "object" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Test push dispatched" }
+        }
+      }
     }
   },
   "components": {
@@ -398,7 +605,69 @@
           },
           "pagination": { "$ref": "#/components/schemas/Pagination" }
         }
+      },
+      "Notification": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "user_id": { "type": "integer", "nullable": true, "example": 1 },
+          "title": { "type": "string", "example": "New Mock Test Available" },
+          "body": { "type": "string", "example": "A new mock test for UPSSSC PET 2026 is now live." },
+          "type": { "type": "string", "example": "course" },
+          "data": { "type": "object", "nullable": true, "example": { "course_id": 1000004, "screen": "quiz" } },
+          "image_url": { "type": "string", "nullable": true, "example": "https://mindmantra.live/images/banner.jpg" },
+          "is_read": { "type": "integer", "example": 0 },
+          "read_at": { "type": "string", "format": "date-time", "nullable": true, "example": null },
+          "created_at": { "type": "string", "format": "date-time", "example": "2026-10-16 12:00:00" }
+        }
+      },
+      "NotificationListResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "integer", "example": 200 },
+          "success": { "type": "boolean", "example": true },
+          "unread_count": { "type": "integer", "example": 3 },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Notification" }
+          },
+          "pagination": { "$ref": "#/components/schemas/Pagination" }
+        }
+      },
+      "DeviceRegisterRequest": {
+        "type": "object",
+        "required": ["token"],
+        "properties": {
+          "token": { "type": "string", "description": "FCM Device Token", "example": "fcm_token_sample_string_12345" },
+          "platform": { "type": "string", "enum": ["android", "ios", "web"], "default": "android", "example": "android" },
+          "device_id": { "type": "string", "nullable": true, "example": "a1b2c3d4-e5f6-7890" },
+          "device_name": { "type": "string", "nullable": true, "example": "Samsung Galaxy S23" }
+        }
+      },
+      "SendNotificationRequest": {
+        "type": "object",
+        "required": ["user_id", "title", "body"],
+        "properties": {
+          "user_id": { "type": "integer", "example": 1 },
+          "title": { "type": "string", "example": "Important Exam Update" },
+          "body": { "type": "string", "example": "Your test report is ready to download." },
+          "type": { "type": "string", "default": "general", "example": "alert" },
+          "data": { "type": "object", "example": { "url": "/reports/123" } },
+          "image_url": { "type": "string", "nullable": true, "example": null }
+        }
+      },
+      "BroadcastNotificationRequest": {
+        "type": "object",
+        "required": ["title", "body"],
+        "properties": {
+          "title": { "type": "string", "example": "Diwali Offer - 50% Off All Courses!" },
+          "body": { "type": "string", "example": "Use code FESTIVE50 to enroll in premium test series today." },
+          "type": { "type": "string", "default": "announcement", "example": "announcement" },
+          "data": { "type": "object", "example": { "coupon": "FESTIVE50" } },
+          "image_url": { "type": "string", "nullable": true, "example": "https://mindmantra.live/assets/festive.png" }
+        }
       }
     }
   }
 }
+

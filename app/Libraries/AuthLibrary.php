@@ -185,4 +185,61 @@ class AuthLibrary
 
         return $decoded;
     }
+
+    /**
+     * Extract token string from an incoming HTTP request.
+     * Supports:
+     *   1) Authorization: Bearer <token>
+     *   2) X-Session-Token: <token>
+     *   3) Cookie named 'session'
+     */
+    public static function extractTokenFromRequest(mixed $request): ?string
+    {
+        if (! is_object($request)) {
+            return null;
+        }
+
+        // 1. Authorization: Bearer <token>
+        if (method_exists($request, 'getHeaderLine')) {
+            $authHeader = trim((string) $request->getHeaderLine('Authorization'));
+            if (! empty($authHeader)) {
+                if (preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+                    return trim($matches[1]);
+                }
+                return $authHeader;
+            }
+
+            // 2. X-Session-Token header
+            $customHeader = trim((string) $request->getHeaderLine('X-Session-Token'));
+            if (! empty($customHeader)) {
+                return $customHeader;
+            }
+        }
+
+        // 3. Cookie 'session'
+        if (method_exists($request, 'getCookie')) {
+            $cookieToken = $request->getCookie('session');
+            if (! empty($cookieToken) && is_string($cookieToken)) {
+                return trim($cookieToken);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Authenticate and extract user payload from an incoming request.
+     *
+     * @return array<string, mixed>|null
+     */
+    public static function getUserFromRequest(mixed $request): ?array
+    {
+        $token = self::extractTokenFromRequest($request);
+        if (empty($token)) {
+            return null;
+        }
+
+        return self::verifySessionToken($token);
+    }
 }
+

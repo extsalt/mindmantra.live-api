@@ -104,4 +104,15 @@ abstract class BaseController extends Controller
 
         return $this->respond($response, $status);
     }
+
+    /**
+     * Retrieve authenticated user from session token or Bearer header if available.
+     *
+     * @return array<string, mixed>|null
+     */
+    protected function getAuthUser(): ?array
+    {
+        return \App\Libraries\AuthLibrary::getUserFromRequest($this->request);
+    }
 }
+
